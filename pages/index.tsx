@@ -5,7 +5,8 @@ import styles from '../styles/Home.module.css';
 interface Todo {
   text: string;
   completed: boolean;
-  priority: 'High' | 'Medium' | 'Low'; // Added priority level
+  priority: 'High' | 'Medium' | 'Low'; // Priority level
+  category: 'Personal' | 'Work'; // Category filter
 }
 
 const Home = () => {
@@ -14,11 +15,12 @@ const Home = () => {
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editText, setEditText] = useState<string>('');
   const [priority, setPriority] = useState<'High' | 'Medium' | 'Low'>('Medium');
-  const [filter, setFilter] = useState<'All' | 'Personal' | 'Work'>('All'); // Added category filter
+  const [category, setCategory] = useState<'Personal' | 'Work'>('Personal'); // Category
+  const [filter, setFilter] = useState<'All' | 'Personal' | 'Work'>('All'); // Category filter
 
   const handleAddTodo = (): void => {
     if (input.trim() !== '') {
-      setTodos([...todos, { text: input, completed: false, priority }]);
+      setTodos([...todos, { text: input, completed: false, priority, category }]);
       setInput('');
     }
   };
@@ -60,6 +62,10 @@ const Home = () => {
     setPriority(e.target.value as 'High' | 'Medium' | 'Low');
   };
 
+  const handleCategoryChange = (e: ChangeEvent<HTMLSelectElement>): void => {
+    setCategory(e.target.value as 'Personal' | 'Work');
+  };
+
   const handleFilterChange = (e: ChangeEvent<HTMLSelectElement>): void => {
     setFilter(e.target.value as 'All' | 'Personal' | 'Work');
   };
@@ -76,8 +82,7 @@ const Home = () => {
 
   const filteredTodos = todos.filter(todo => {
     if (filter === 'All') return true;
-    // Example category-based filtering
-    return filter === 'Personal' || filter === 'Work'; // Adjust this logic based on actual category handling
+    return todo.category === filter;
   });
 
   return (
@@ -95,6 +100,10 @@ const Home = () => {
         <option value="High">High Priority</option>
         <option value="Medium">Medium Priority</option>
         <option value="Low">Low Priority</option>
+      </select>
+      <select value={category} onChange={handleCategoryChange} className={styles.prioritySelect}>
+        <option value="Personal">Personal</option>
+        <option value="Work">Work</option>
       </select>
       <button onClick={handleClick} className={styles.addButton}>Add</button>
       {editIndex !== null && (
